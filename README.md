@@ -75,19 +75,26 @@ This enables **real-time decision-making** for complex policy environments.
 
 ## 📁 Project Structure
 
+## 📁 Project Structure
+
+```text
 sih_finals/
-├── assets/ # README images (screenshots)
-├── public/ # Static assets for app
+├── assets/
+│   └── images/            # README images (screenshots)
+├── public/                # Static assets for app
+│   └── assets/
+│       └── images/        # App images
 ├── src/
-│ ├── components/
-│ ├── pages/
-│ ├── styles/
-│ ├── App.jsx
-│ ├── Routes.jsx
-│ └── index.jsx
+│   ├── components/
+│   ├── pages/
+│   ├── styles/
+│   ├── App.jsx
+│   ├── Routes.jsx
+│   └── index.jsx
 ├── README.md
 ├── package.json
 └── vite.config.js
+```
 
 ---
 
@@ -129,9 +136,9 @@ npm run dev
 
 ## 🙌 Team & Credits
 
-Kavyansh Jain (Team Lead) - AI/ML
-Divyanshu Pratap Singh - Backend
-Arnavv Agnihotri - Backend
-Aryan Singh - Frontend
-Roshni Kumari - Documentation & AI/ML
-Parth Agrawal - Frontend
+- Kavyansh Jain (Team Lead) - AI/ML
+- Divyanshu Pratap Singh - Backend
+- Arnavv Agnihotri - Backend
+- Aryan Singh - Frontend
+- Roshni Kumari - Documentation & AI/ML
+- Parth Agrawal - Frontend
