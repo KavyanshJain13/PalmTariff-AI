@@ -79,6 +79,12 @@ This enables **real-time decision-making** for complex policy environments.
 
 ```text
 sih_finals/
+├── ML_Models/
+    ├── inspect_global_dataset/
+    ├── xgb_lstm_rf_on_gen11_enhanced/
+    ├── india_cpo_clean_ml_dataset_gen11/
+    ├── gen_11_enhanced/
+    └── global_dataset/
 ├── assets/
 │   └── images/            # README images (screenshots)
 ├── public/                # Static assets for app
