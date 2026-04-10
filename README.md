@@ -13,9 +13,6 @@
 ![Comparison 3](assets/images/Comparison_3.png)
 ![Cultivation](assets/images/Cultivation.png)
 
-
-> *(Add your screenshots inside `assets/images/` and update names accordingly)*
-
 ---
 
 ## 📌 Problem Statement
