@@ -1,0 +1,455 @@
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import Header from '../../components/ui/Header';
+import TabNavigation from '../../components/ui/TabNavigation';
+import ExportToolbar from '../../components/ui/ExportToolbar';
+import StatusIndicator from '../../components/ui/StatusIndicator';
+import ProgressOverview from './components/ProgressOverview';
+import TrendChart from './components/TrendChart';
+import KPICards from './components/KPICards';
+import RegionalBreakdown from './components/RegionalBreakdown';
+import MissionAlerts from './components/MissionAlerts';
+import Icon from '../../components/AppIcon';
+import Button from '../../components/ui/Button';
+
+const NMEOOPProgressTracker = () => {
+  const [apiStatus, setApiStatus] = useState('connected');
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Mock data for progress overview
+  const progressData = {
+    currentDependency: 57,
+    targetDependency: 45,
+    progressPercentage: 40,
+    timeline: [
+      {
+        title: "Mission Launch",
+        date: "Aug 2021",
+        description: "NMEO-OP officially launched with ₹11,040 Cr allocation",
+        completed: true,
+        inProgress: false
+      },
+      {
+        title: "State Implementation",
+        date: "Dec 2022",
+        description: "All 18 states initiated oil palm cultivation programs",
+        completed: true,
+        inProgress: false
+      },
+      {
+        title: "Farmer Enrollment Drive",
+        date: "Jun 2024",
+        description: "Target: 1 lakh farmers enrolled across focus states",
+        completed: false,
+        inProgress: true
+      },
+      {
+        title: "Processing Infrastructure",
+        date: "Mar 2026",
+        description: "Establish 50 new processing units nationwide",
+        completed: false,
+        inProgress: false
+      },
+      {
+        title: "Import Reduction Target",
+        date: "Mar 2030",
+        description: "Achieve 45% import dependency through domestic production",
+        completed: false,
+        inProgress: false
+      }
+    ]
+  };
+
+  // Mock data for trend charts
+  const trendData = [
+    { year: '2015', importDependency: 65, domesticProduction: 0.25, palmArea: 0.32 },
+    { year: '2016', importDependency: 64, domesticProduction: 0.28, palmArea: 0.35 },
+    { year: '2017', importDependency: 63, domesticProduction: 0.31, palmArea: 0.38 },
+    { year: '2018', importDependency: 62, domesticProduction: 0.34, palmArea: 0.42 },
+    { year: '2019', importDependency: 61, domesticProduction: 0.37, palmArea: 0.45 },
+    { year: '2020', importDependency: 60, domesticProduction: 0.40, palmArea: 0.48 },
+    { year: '2021', importDependency: 59, domesticProduction: 0.45, palmArea: 0.52 },
+    { year: '2022', importDependency: 58, domesticProduction: 0.52, palmArea: 0.58 },
+    { year: '2023', importDependency: 57.5, domesticProduction: 0.58, palmArea: 0.64 },
+    { year: '2024', importDependency: 57, domesticProduction: 0.65, palmArea: 0.70 },
+    { year: '2025', importDependency: 55, domesticProduction: 0.75, palmArea: 0.80 },
+    { year: '2026', importDependency: 52, domesticProduction: 0.88, palmArea: 0.95 },
+    { year: '2027', importDependency: 49, domesticProduction: 1.05, palmArea: 1.15 },
+    { year: '2028', importDependency: 47, domesticProduction: 1.25, palmArea: 1.35 },
+    { year: '2029', importDependency: 46, domesticProduction: 1.45, palmArea: 1.55 },
+    { year: '2030', importDependency: 45, domesticProduction: 1.65, palmArea: 1.75 }
+  ];
+
+  // Mock KPI data
+  const kpiData = [
+    {
+      title: "Domestic Production Capacity",
+      value: 0.65,
+      type: "production",
+      change: 12.5,
+      icon: "Factory",
+      iconColor: "text-success",
+      bgColor: "bg-success/10",
+      description: "Million tonnes annual capacity",
+      target: 1.65,
+      progress: 39
+    },
+    {
+      title: "Oil Palm Cultivation Area",
+      value: 0.70,
+      type: "area",
+      change: 8.3,
+      icon: "Sprout",
+      iconColor: "text-primary",
+      bgColor: "bg-primary/10",
+      description: "Lakh hectares under cultivation",
+      target: 1.75,
+      progress: 40
+    },
+    {
+      title: "Farmer Participation",
+      value: 78500,
+      type: "farmers",
+      change: 15.2,
+      icon: "Users",
+      iconColor: "text-warning",
+      bgColor: "bg-warning/10",
+      description: "Active farmers enrolled",
+      target: 100000,
+      progress: 78.5
+    },
+    {
+      title: "Mission Investment",
+      value: 4420,
+      type: "currency",
+      change: 6.8,
+      icon: "IndianRupee",
+      iconColor: "text-secondary",
+      bgColor: "bg-secondary/10",
+      description: "Crores utilized till date",
+      target: 11040,
+      progress: 40
+    }
+  ];
+
+  // Mock regional data
+  const regionalData = [
+    {
+      state: "Andhra Pradesh",
+      progress: 85,
+      palmArea: 0.18,
+      farmerParticipation: 15200,
+      fundingUtilization: 78,
+      fundingAmount: 890,
+      processingUnits: 8,
+      achievements: [
+        "Highest oil palm productivity in India at 18.5 MT/ha",
+        "Successfully established 8 processing units",
+        "Achieved 85% farmer enrollment target"
+      ],
+      challenges: [
+        "Water scarcity in some districts affecting expansion",
+        "Need for more cold storage facilities"
+      ]
+    },
+    {
+      state: "Telangana",
+      progress: 72,
+      palmArea: 0.12,
+      farmerParticipation: 9800,
+      fundingUtilization: 65,
+      fundingAmount: 520,
+      processingUnits: 5,
+      achievements: [
+        "Innovative drip irrigation adoption at 90%",
+        "Strong farmer training programs established",
+        "Good market linkage development"
+      ],
+      challenges: [
+        "Delayed processing unit construction",
+        "Higher input costs affecting farmer margins"
+      ]
+    },
+    {
+      state: "Karnataka",
+      progress: 68,
+      palmArea: 0.08,
+      farmerParticipation: 7200,
+      fundingUtilization: 58,
+      fundingAmount: 380,
+      processingUnits: 3,
+      achievements: [
+        "Strong research collaboration with universities",
+        "Effective pest management systems",
+        "Good quality planting material supply"
+      ],
+      challenges: [
+        "Land fragmentation issues",
+        "Competition with other cash crops"
+      ]
+    },
+    {
+      state: "Tamil Nadu",
+      progress: 64,
+      palmArea: 0.06,
+      farmerParticipation: 5800,
+      fundingUtilization: 52,
+      fundingAmount: 290,
+      processingUnits: 2,
+      achievements: [
+        "Excellent extension services network",
+        "High-tech nursery establishment",
+        "Good farmer cooperative formation"
+      ],
+      challenges: [
+        "Cyclone damage recovery ongoing",
+        "Processing capacity constraints"
+      ]
+    },
+    {
+      state: "Kerala",
+      progress: 58,
+      palmArea: 0.04,
+      farmerParticipation: 4200,
+      fundingUtilization: 45,
+      fundingAmount: 180,
+      processingUnits: 1,
+      achievements: [
+        "Organic cultivation practices adoption",
+        "Strong farmer awareness programs",
+        "Good technical support system"
+      ],
+      challenges: [
+        "Small land holdings limiting scale",
+        "Higher labor costs"
+      ]
+    },
+    {
+      state: "Odisha",
+      progress: 45,
+      palmArea: 0.05,
+      farmerParticipation: 3800,
+      fundingUtilization: 38,
+      fundingAmount: 220,
+      processingUnits: 1,
+      achievements: [
+        "Tribal area development focus",
+        "Soil testing and improvement programs",
+        "Basic infrastructure development"
+      ],
+      challenges: [
+        "Remote area connectivity issues",
+        "Limited technical expertise availability"
+      ]
+    }
+  ];
+
+  // Mock alerts data
+  const alertsData = [
+    {
+      id: 'alert-001',
+      priority: 'critical',
+      title: 'Funding Utilization Below Target',
+      description: 'Overall mission funding utilization at 40% against 55% target for current fiscal year. Immediate intervention required to accelerate implementation.',
+      region: 'National',
+      date: '26/10/2025',
+      impact: 'Mission timeline delay risk',
+      actionRequired: true,
+      recommendations: [
+        'Expedite pending state approvals for infrastructure projects',
+        'Increase technical support team deployment',
+        'Streamline procurement processes for faster implementation'
+      ]
+    },
+    {
+      id: 'alert-002',
+      priority: 'high',
+      title: 'Processing Capacity Shortage',
+      description: 'Current processing capacity insufficient to handle projected palm oil production in Andhra Pradesh and Telangana by 2026.',
+      region: 'Andhra Pradesh, Telangana',
+      date: '25/10/2025',
+      impact: 'Farmer income reduction',
+      actionRequired: true,
+      recommendations: [
+        'Fast-track approval for 5 additional processing units',
+        'Encourage private sector participation in processing',
+        'Develop mobile processing units for remote areas'
+      ]
+    },
+    {
+      id: 'alert-003',
+      priority: 'high',
+      title: 'Water Scarcity Impact',
+      description: 'Drought conditions in key cultivation areas affecting oil palm growth and farmer confidence in program continuation.',
+      region: 'Karnataka, Tamil Nadu',
+      date: '24/10/2025',
+      impact: 'Area expansion slowdown',
+      actionRequired: true,
+      recommendations: [
+        'Implement advanced drip irrigation systems',
+        'Provide water harvesting infrastructure support',
+        'Develop drought-resistant oil palm varieties'
+      ]
+    },
+    {
+      id: 'alert-004',
+      priority: 'medium',
+      title: 'Farmer Training Gap',
+      description: 'Technical training completion rate at 65% in newer implementation states. Enhanced capacity building required.',
+      region: 'Odisha, Kerala',
+      date: '23/10/2025',
+      impact: 'Productivity concerns',
+      actionRequired: false,
+      recommendations: [
+        'Increase training center establishment',
+        'Deploy mobile training units',
+        'Develop digital learning platforms'
+      ]
+    },
+    {
+      id: 'alert-005',
+      priority: 'medium',
+      title: 'Market Price Volatility',
+      description: 'International palm oil prices showing high volatility affecting farmer income projections and program attractiveness.',
+      region: 'National',
+      date: '22/10/2025',
+      impact: 'Farmer enrollment slowdown',
+      actionRequired: false,
+      recommendations: [
+        'Implement price stabilization mechanisms',
+        'Strengthen domestic market linkages',
+        'Develop value-added product markets'
+      ]
+    }
+  ];
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    setApiStatus('connecting');
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setApiStatus('connected');
+    setLastUpdated(new Date());
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    // Simulate periodic data updates
+    const interval = setInterval(() => {
+      setLastUpdated(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>NMEO-OP Progress Tracker - PalmTariff-AI</title>
+        <meta name="description" content="Monitor National Mission on Edible Oils - Oil Palm implementation progress, import dependency reduction goals, and state-wise performance metrics." />
+      </Helmet>
+      <Header />
+      <TabNavigation />
+      <main className="container mx-auto px-6 py-8">
+        {/* Page Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              NMEO-OP Progress Tracker
+            </h1>
+            <p className="text-muted-foreground">
+              Monitor National Mission implementation progress and import dependency reduction goals
+            </p>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <StatusIndicator 
+              apiStatus={apiStatus} 
+              simulationStatus={refreshing ? 'processing' : 'idle'} 
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              loading={refreshing}
+              iconName="RefreshCw"
+              iconPosition="left"
+            >
+              Refresh Data
+            </Button>
+            <ExportToolbar className="hidden sm:flex" />
+          </div>
+        </div>
+
+        {/* Mission Overview Stats */}
+        <div className="mb-8">
+          <KPICards kpiData={kpiData} />
+        </div>
+
+        {/* Progress Overview */}
+        <div className="mb-8">
+          <ProgressOverview progressData={progressData} />
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+          <TrendChart trendData={trendData} chartType="area" />
+          <TrendChart trendData={trendData} chartType="line" />
+        </div>
+
+        {/* Regional Breakdown */}
+        <div className="mb-8">
+          <RegionalBreakdown regionalData={regionalData} />
+        </div>
+
+        {/* Mission Alerts */}
+        <div className="mb-8">
+          <MissionAlerts alertsData={alertsData} />
+        </div>
+
+        {/* Data Source Information */}
+        <div className="bg-muted/30 rounded-lg p-6">
+          <div className="flex items-start space-x-3">
+            <Icon name="Info" size={20} className="text-primary mt-0.5" />
+            <div>
+              <h4 className="font-medium text-foreground mb-2">Data Sources & Methodology</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+                <div>
+                  <p className="mb-2">
+                    <strong>Primary Sources:</strong> Ministry of Agriculture & Farmers Welfare, 
+                    Department of Agriculture & Cooperation, State Agriculture Departments
+                  </p>
+                  <p>
+                    <strong>Update Frequency:</strong> Monthly progress reports, 
+                    quarterly financial reviews, annual impact assessments
+                  </p>
+                </div>
+                <div>
+                  <p className="mb-2">
+                    <strong>Data Validation:</strong> Cross-verified with field reports, 
+                    satellite imagery analysis, and farmer feedback systems
+                  </p>
+                  <p>
+                    <strong>Last Updated:</strong> {lastUpdated?.toLocaleString('en-IN', {
+                      day: '2-digit',
+                      month: '2-digit', 
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default NMEOOPProgressTracker;
